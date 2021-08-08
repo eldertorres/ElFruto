@@ -1,13 +1,23 @@
 ﻿using System.Threading.Tasks;
 using Application.Features.UserFeature.Commmands;
 using Application.Features.UserFeature.Queries;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using WebApi.Helpers;
 
 namespace WebApi.Controllers.v1
 {
     public class UserController : BaseApiController
     {
+        
+        private readonly AppSettings _appSettings;
+
+        public UserController(IOptions<AppSettings> appSettings)
+        {
+            _appSettings = appSettings.Value;
+        }
+
         /// <summary>
         /// Efetua o login do usuário
         /// </summary>
@@ -16,6 +26,7 @@ namespace WebApi.Controllers.v1
         [HttpPost("[action]")]
         public async Task<IActionResult> Login(LoginUserCommand command)
         {
+            command.Secret = _appSettings.Secret;
             return Ok(await Mediator.Send(command));
         }
         

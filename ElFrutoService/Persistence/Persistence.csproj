@@ -34,6 +34,10 @@
     <ItemGroup>
       <Compile Include="Migrations\20210807140205_Inicial.cs" />
       <Compile Include="Migrations\20210807140205_Inicial.Designer.cs" />
+      <Compile Include="Migrations\20210807214546_AjusteCampoDecimal.cs" />
+      <Compile Include="Migrations\20210807214546_AjusteCampoDecimal.Designer.cs" />
+      <Compile Include="Migrations\20210808202430_InclusaoUsuarios.cs" />
+      <Compile Include="Migrations\20210808202430_InclusaoUsuarios.Designer.cs" />
       <Compile Include="Migrations\AppDbContextModelSnapshot.cs" />
     </ItemGroup>
 

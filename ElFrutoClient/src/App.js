@@ -26,16 +26,16 @@ export default class App extends Component {
     let user = localStorage.getItem("user");
     let cart = localStorage.getItem("cart");
 
-    const products = await axios.get('http://localhost:3001/products');
+    const products = await axios.get('https://localhost:5001/api/v1/Fruit');
     user = user ? JSON.parse(user) : null;
-    cart = cart ? JSON.parse(cart) : null;
+    cart = cart ? JSON.parse(cart) : {};
 
     this.setState({ user,  products: products.data, cart });
   }
 
   login = async (email, password) => {
     const res = await axios.post(
-      'http://localhost:3001/login',
+      'https://localhost:5001/api/v1/Login',
       { email, password },
     ).catch((res) => {
       return { status: 401, message: 'Unauthorized' }
@@ -72,30 +72,53 @@ export default class App extends Component {
   addToCart = cartItem => {
     let cart = this.state.cart;
     if (cart[cartItem.id]) {
-      cart[cartItem.id].amount += cartItem.amount;      
+      cart[cartItem.id].amount += cartItem.amount;
     } else {
       cart[cartItem.id] = cartItem;
     }
-
-    if (cart[cartItem.id].amount > cart[cartItem.id].product.stock){
+    if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
       cart[cartItem.id].amount = cart[cartItem.id].product.stock;
     }
     localStorage.setItem("cart", JSON.stringify(cart));
     this.setState({ cart });
-  }
+  };
 
   removeFromCart = cartItemId => {
     let cart = this.state.cart;
     delete cart[cartItemId];
     localStorage.setItem("cart", JSON.stringify(cart));
-    this.setState({ cart });    
-  }
-
+    this.setState({ cart });
+  };
+  
   clearCart = () => {
     let cart = {};
     localStorage.removeItem("cart");
     this.setState({ cart });
-  }
+  };
+
+  checkout = () => {
+    if (!this.state.user) {
+      this.routerRef.current.history.push("/login");
+      return;
+    }
+  
+    const cart = this.state.cart;
+  
+    const products = this.state.products.map(p => {
+      if (cart[p.name]) {
+        p.stock = p.stock - cart[p.name].amount;
+  
+        axios.put(
+          `https://localhost:5001/api/v1/Fruit/${p.id}`,
+          { ...p },
+        )
+      }
+      return p;
+    });
+  
+    this.setState({ products });
+    this.clearCart();
+  };
 
   render() {
     return (
@@ -118,7 +141,7 @@ export default class App extends Component {
             aria-label="main navigation"
           >
             <div className="navbar-brand">
-              <b className="navbar-item is-size-4 ">El Fruto</b>
+              <b className="navbar-item is-size-4 ">Pineapple Store</b>
               <label
                 role="button"
                 class="navbar-burger burger"
@@ -139,15 +162,15 @@ export default class App extends Component {
                   this.state.showMenu ? "is-active" : ""
                 }`}>
                 <Link to="/products" className="navbar-item">
-                  Products
+                  Frutas
                 </Link>
                 {this.state.user && this.state.user.accessLevel < 1 && (
                   <Link to="/add-product" className="navbar-item">
-                    Add Product
+                    Adicionar Fruta
                   </Link>
                 )}
                 <Link to="/cart" className="navbar-item">
-                  Cart
+                  Carrinho de Compras
                   <span
                     className="tag is-primary"
                     style={{ marginLeft: "5px" }}

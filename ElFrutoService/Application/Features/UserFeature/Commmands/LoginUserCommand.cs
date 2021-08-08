@@ -1,7 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Interfaces.Repository;
 using MediatR;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Application.Features.UserFeature.Commmands
 {
@@ -11,19 +20,50 @@ namespace Application.Features.UserFeature.Commmands
         public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
+
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string Secret { get; set; }
         
         public class LoginResponse
         {
             public int Id { get; set; }
-            public string UserName { get; set; }
+            public string Username { get; set; }
             public string Token { get; set; }
         }
         
         public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginResponse>
         {
-            public Task<LoginResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+            private readonly IUserRepository _userRepository;
+
+            public LoginUserCommandHandler(IUserRepository userRepository)
             {
-                throw new System.NotImplementedException();
+                _userRepository = userRepository;
+            }
+
+            public async Task<LoginResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+            {
+                var users = await _userRepository.GetAll();
+                var user = users.SingleOrDefault(x => x.Username == request.UserName && x.Password == request.Password);
+                
+                if (user == null) return default;
+                
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(request.Secret);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var newToken = tokenHandler.CreateToken(tokenDescriptor);
+                var token = tokenHandler.WriteToken(newToken);
+
+                return new LoginResponse()
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Token = token
+                };
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces.Repository;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace WebApi.Helpers
@@ -14,10 +15,10 @@ namespace WebApi.Helpers
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
 
-        public JwtMiddleware(RequestDelegate next, AppSettings appSettings)
+        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
             _next = next;
-            _appSettings = appSettings;
+            _appSettings = appSettings.Value;
         }
 
         public async Task Invoke(HttpContext context, IUserRepository userRepository)
@@ -29,7 +30,7 @@ namespace WebApi.Helpers
             await _next(context);
         }
 
-        private void AttachUserToContext(HttpContext context, IUserRepository userRepository, string token)
+        private async void AttachUserToContext(HttpContext context, IUserRepository userRepository, string token)
         {
             try
             {
@@ -45,9 +46,9 @@ namespace WebApi.Helpers
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
-                var jwtToken = (JwtSecurityToken) validatedToken;
+                var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
-                context.Items["User"] = userRepository.GetById(userId);
+                context.Items["User"] = await userRepository.GetById(userId);
             }
             catch
             {

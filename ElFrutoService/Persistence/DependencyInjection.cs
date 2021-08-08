@@ -20,6 +20,7 @@ namespace Persistence
             
             services.AddScoped<IFruitRepository, FruitRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             
         }
     }

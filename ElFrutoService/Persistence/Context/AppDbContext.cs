@@ -23,6 +23,24 @@ namespace Persistence.Context
                 property.SetScale(6);
             }
             
+            modelBuilder.Entity<User>().HasData
+            (
+                new User
+                {
+                    Id = -1,
+                    Email = "admin@pineapple.com",
+                    Username = "admin",
+                    Password = "badpass"
+                },
+                new User
+                {
+                    Id = -2,
+                    Email = "user@pineapple.com",
+                    Username = "user",
+                    Password = "pass"
+                }
+            );
+            
             base.OnModelCreating(modelBuilder);
         }
 
@@ -32,10 +50,10 @@ namespace Persistence.Context
             return await base.SaveChangesAsync();
         }
         
-
         public DbSet<Fruit> Fruits { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
+        public DbSet<User> Users { get; set; }
 
     }
 }
