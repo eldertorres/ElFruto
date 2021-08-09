@@ -6,8 +6,9 @@ import axios from 'axios';
 const initState = {
   name: "",
   price: "",
-  stock: "",
-  shortDesc: "",
+  quantity: "",
+  picture: "",
+  pictureFile: "",
   description: ""
 };
 
@@ -19,41 +20,59 @@ class AddProduct extends Component {
 
   save = async (e) => {
     e.preventDefault();
-    const { name, price, stock, shortDesc, description } = this.state;
+    const { name, price, quantity, picture, description } = this.state;
 
-    if (name && price) {
-      const id = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    if (name && price) {      
 
       await axios.post(
-        'http://localhost:3001/products',
-        { id, name, price, stock, shortDesc, description },
+        'https://localhost:5001/api/v1/Fruit/',
+        { name, price, quantity, picture, description },
       )
 
       this.props.context.addProduct(
         {
           name,
           price,
-          shortDesc,
+          picture,
           description,
-          stock: stock || 0
+          quantity: quantity || 0
         },
         () => this.setState(initState)
       );
       this.setState(
-        { flash: { status: 'is-success', msg: 'Product created successfully' }}
+        { flash: { status: 'is-success', msg: 'Fruta adicionada com sucesso' }}
       );
 
     } else {
       this.setState(
-        { flash: { status: 'is-danger', msg: 'Please enter name and price' }}
+        { flash: { status: 'is-danger', msg: 'Os campos Nome e Preço são obrigatórios' }}
       );
     }
+  };
+
+  convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file)
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      }
+      fileReader.onerror = (error) => {
+        reject(error);
+      }
+    })
+  };
+
+  handleFileRead = async (e) => {    
+    const file = e.target.files[0]
+    const base64 = await this.convertBase64(file)    
+    this.setState({ picture: base64, error: "" })    
   };
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value, error: "" });
 
   render() {
-    const { name, price, stock, shortDesc, description } = this.state;
+    const { name, price, quantity, pictureFile, description } = this.state;
     const { user } = this.props.context;
 
     return !(user && user.accessLevel < 1) ? (
@@ -62,7 +81,7 @@ class AddProduct extends Component {
       <>
         <div className="hero is-primary ">
           <div className="hero-body container">
-            <h4 className="title">Add Product</h4>
+            <h4 className="title">Adicionar Fruta</h4>
           </div>
         </div>
         <br />
@@ -71,7 +90,7 @@ class AddProduct extends Component {
           <div className="columns is-mobile is-centered">
             <div className="column is-one-third">
               <div className="field">
-                <label className="label">Product Name: </label>
+                <label className="label">Nome: </label>
                 <input
                   className="input"
                   type="text"
@@ -82,7 +101,7 @@ class AddProduct extends Component {
                 />
               </div>
               <div className="field">
-                <label className="label">Price: </label>
+                <label className="label">Preço: </label>
                 <input
                   className="input"
                   type="number"
@@ -93,27 +112,27 @@ class AddProduct extends Component {
                 />
               </div>
               <div className="field">
-                <label className="label">Available in Stock: </label>
+                <label className="label">Quantidade em estoque: </label>
                 <input
                   className="input"
                   type="number"
-                  name="stock"
-                  value={stock}
+                  name="quantity"
+                  value={quantity}
                   onChange={this.handleChange}
                 />
               </div>
               <div className="field">
-                <label className="label">Short Description: </label>
+                <label className="label">Imagem: </label>
                 <input
                   className="input"
-                  type="text"
-                  name="shortDesc"
-                  value={shortDesc}
-                  onChange={this.handleChange}
+                  type="file"
+                  name="pictureFile"
+                  value={pictureFile}                  
+                  onChange= {e => { this.handleChange(e); this.handleFileRead(e) }}
                 />
               </div>
               <div className="field">
-                <label className="label">Description: </label>
+                <label className="label">Descrição: </label>
                 <textarea
                   className="textarea"
                   type="text"
@@ -135,7 +154,7 @@ class AddProduct extends Component {
                   type="submit"
                   onClick={this.save}
                 >
-                  Submit
+                  Enviar
                 </button>
               </div>
             </div>
