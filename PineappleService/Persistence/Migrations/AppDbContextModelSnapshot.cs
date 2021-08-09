@@ -110,9 +110,6 @@ namespace Persistence.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Users");
@@ -122,15 +119,13 @@ namespace Persistence.Migrations
                         {
                             Id = -1,
                             Email = "admin@pineapple.com",
-                            Password = "badpass",
-                            Username = "admin"
+                            Password = "badpass"
                         },
                         new
                         {
                             Id = -2,
                             Email = "user@pineapple.com",
-                            Password = "pass",
-                            Username = "user"
+                            Password = "pass"
                         });
                 });
 

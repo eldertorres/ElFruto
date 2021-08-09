@@ -35,18 +35,18 @@ export default class App extends Component {
 
   login = async (email, password) => {
     const res = await axios.post(
-      'https://localhost:5001/api/v1/Login',
+      'https://localhost:5001/api/v1/User/Login',
       { email, password },
     ).catch((res) => {
       return { status: 401, message: 'Unauthorized' }
     })
   
     if(res.status === 200) {
-      const { email } = jwt_decode(res.data.accessToken)
+      const { email } = jwt_decode(res.data.token)
       const user = {
         email,
-        token: res.data.accessToken,
-        accessLevel: email === 'admin@example.com' ? 0 : 1
+        token: res.data.token,
+        accessLevel: email === 'admin@pineapple.com' ? 0 : 1
       }
   
       this.setState({ user });
@@ -76,8 +76,8 @@ export default class App extends Component {
     } else {
       cart[cartItem.id] = cartItem;
     }
-    if (cart[cartItem.id].amount > cart[cartItem.id].product.stock) {
-      cart[cartItem.id].amount = cart[cartItem.id].product.stock;
+    if (cart[cartItem.id].amount > cart[cartItem.id].product.quantity) {
+      cart[cartItem.id].amount = cart[cartItem.id].product.quantity;
     }
     localStorage.setItem("cart", JSON.stringify(cart));
     this.setState({ cart });
@@ -106,7 +106,7 @@ export default class App extends Component {
   
     const products = this.state.products.map(p => {
       if (cart[p.name]) {
-        p.stock = p.stock - cart[p.name].amount;
+        p.quantity = p.quantity - cart[p.name].amount;
   
         axios.put(
           `https://localhost:5001/api/v1/Fruit/${p.id}`,

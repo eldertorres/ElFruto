@@ -2,7 +2,7 @@
 
 namespace Persistence.Migrations
 {
-    public partial class Inicial : Migration
+    public partial class MigrationInitial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,8 +15,8 @@ namespace Persistence.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Picture = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,11 +29,25 @@ namespace Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Total = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ShoppingCarts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -44,9 +58,9 @@ namespace Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ShoppingCartId = table.Column<int>(type: "int", nullable: false),
                     FruitId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    UnityPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Quantity = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
+                    UnityPrice = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,6 +79,16 @@ namespace Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Email", "Password" },
+                values: new object[] { -1, "admin@pineapple.com", "badpass" });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Email", "Password" },
+                values: new object[] { -2, "user@pineapple.com", "pass" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ShoppingCartItems_FruitId",
                 table: "ShoppingCartItems",
@@ -80,6 +104,9 @@ namespace Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ShoppingCartItems");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Fruits");

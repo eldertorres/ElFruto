@@ -9,8 +9,8 @@ const ProductItem = props => {
           <div className="media-left">
             <figure className="image is-64x64">
               <img
-                src="https://bulma.io/images/placeholders/128x128.png"
-                alt={product.shortDesc}
+                src={product.picture}
+                alt={product.name}
               />
             </figure>
           </div>
@@ -19,15 +19,15 @@ const ProductItem = props => {
               {product.name}{" "}
               <span className="tag is-primary">${product.price}</span>
             </b>
-            <div>{product.shortDesc}</div>
-            {product.stock > 0 ? (
-              <small>{product.stock + " Em estoque"}</small>
+            <div>{product.description}</div>
+            {product.quantity > 0 ? (
+              <small>{product.quantity + " Em estoque"}</small>
             ) : (
               <small className="has-text-danger">Esgotado</small>
             )}
             <div className="is-clearfix">
               <button
-                className="button is-small is-outlined is-primary   is-pulled-right"
+                className="button is-small is-outlined is-primary is-pulled-right"
                 onClick={() =>
                   props.addToCart({
                     id: product.name,

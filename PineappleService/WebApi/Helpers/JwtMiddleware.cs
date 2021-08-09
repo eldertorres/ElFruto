@@ -47,7 +47,7 @@ namespace WebApi.Helpers
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "email").Value);
                 context.Items["User"] = await userRepository.GetById(userId);
             }
             catch

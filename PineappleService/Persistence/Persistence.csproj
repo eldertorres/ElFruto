@@ -5,6 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Migrations\**" />
+      <EmbeddedResource Remove="Migrations\**" />
+      <None Remove="Migrations\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Dapper" Version="2.0.90" />
       <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="8.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
@@ -17,27 +23,14 @@
 
     <ItemGroup>
       <Compile Remove="Context\ApplicationDbContext.cs" />
-      <Compile Remove="Migrations\**" />
       <Compile Remove="Repository\ProductRepository.cs" />
       <Compile Remove="Repository\PecaObraRepository.cs" />
       <Compile Remove="Context\DapperDbContext.cs" />
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="Migrations\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Migrations\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Include="Migrations\20210807140205_Inicial.cs" />
-      <Compile Include="Migrations\20210807140205_Inicial.Designer.cs" />
-      <Compile Include="Migrations\20210807214546_AjusteCampoDecimal.cs" />
-      <Compile Include="Migrations\20210807214546_AjusteCampoDecimal.Designer.cs" />
-      <Compile Include="Migrations\20210808202430_InclusaoUsuarios.cs" />
-      <Compile Include="Migrations\20210808202430_InclusaoUsuarios.Designer.cs" />
+      <Compile Include="Migrations\20210808230724_MigrationInitial.cs" />
+      <Compile Include="Migrations\20210808230724_MigrationInitial.Designer.cs" />
       <Compile Include="Migrations\AppDbContextModelSnapshot.cs" />
     </ItemGroup>
 

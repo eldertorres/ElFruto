@@ -55,7 +55,7 @@ namespace WebApi.Controllers.v1
         /// <param name="id"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPut("[action]")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateFruitCommand command)
         {
             if (id != command.Id)

@@ -9,8 +9,8 @@ using Persistence.Context;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210807214546_AjusteCampoDecimal")]
-    partial class AjusteCampoDecimal
+    [Migration("20210808230724_MigrationInitial")]
+    partial class MigrationInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -97,6 +97,38 @@ namespace Persistence.Migrations
                     b.HasIndex("ShoppingCartId");
 
                     b.ToTable("ShoppingCartItems");
+                });
+
+            modelBuilder.Entity("Domain.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Email = "admin@pineapple.com",
+                            Password = "badpass"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Email = "user@pineapple.com",
+                            Password = "pass"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.ShoppingCartItem", b =>

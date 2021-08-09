@@ -17,7 +17,7 @@ namespace Application.Features.UserFeature.Commmands
     public class LoginUserCommand : IRequest<LoginUserCommand.LoginResponse>
     {
         [Required]
-        public string UserName { get; set; }
+        public string Email { get; set; }
         [Required]
         public string Password { get; set; }
 
@@ -27,7 +27,7 @@ namespace Application.Features.UserFeature.Commmands
         public class LoginResponse
         {
             public int Id { get; set; }
-            public string Username { get; set; }
+            public string Email { get; set; }
             public string Token { get; set; }
         }
         
@@ -43,7 +43,7 @@ namespace Application.Features.UserFeature.Commmands
             public async Task<LoginResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
             {
                 var users = await _userRepository.GetAll();
-                var user = users.SingleOrDefault(x => x.Username == request.UserName && x.Password == request.Password);
+                var user = users.SingleOrDefault(x => x.Email == request.Email && x.Password == request.Password);
                 
                 if (user == null) return default;
                 
@@ -51,7 +51,7 @@ namespace Application.Features.UserFeature.Commmands
                 var key = Encoding.ASCII.GetBytes(request.Secret);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
+                    Subject = new ClaimsIdentity(new[] { new Claim("email", user.Email) }),
                     Expires = DateTime.UtcNow.AddDays(7),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
@@ -61,7 +61,7 @@ namespace Application.Features.UserFeature.Commmands
                 return new LoginResponse()
                 {
                     Id = user.Id,
-                    Username = user.Username,
+                    Email = user.Email,
                     Token = token
                 };
             }
